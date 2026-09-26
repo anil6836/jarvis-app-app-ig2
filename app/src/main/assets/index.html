@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#f6f8f2">
+<title>కూరగాయలు</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f8f2;
+    --surface: #ffffff;
+    --ink: #202b22;
+    --muted: #758076;
+    --green: #28734b;
+    --green-dark: #1d5939;
+    --mint: #e6f2e8;
+    --line: #e8ede5;
+    --shadow: 0 8px 24px rgba(34, 58, 39, .07);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; width: 100%; min-height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Noto Sans Telugu", "Nirmala UI", sans-serif;
+    font-size: 15px;
+    overscroll-behavior-y: contain;
+  }
+  button, input { font: inherit; }
+  button { color: inherit; }
+  .app {
+    max-width: 600px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+  .topbar {
+    height: 66px;
+    padding: 0 21px;
+    padding-top: env(safe-area-inset-top);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(246, 248, 242, .96);
+  }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand-mark {
+    width: 39px; height: 39px; display: grid; place-items: center;
+    border-radius: 14px; background: var(--green); font-size: 21px;
+    box-shadow: 0 5px 12px rgba(40,115,75,.2);
+  }
+  .brand-name { font-weight: 750; font-size: 20px; letter-spacing: -.3px; }
+  .top-note { color: var(--muted); font-size: 12px; }
+  main { padding: 10px 19px 20px; }
+  .intro {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 20px 21px;
+    min-height: 146px;
+    color: white;
+    border-radius: 23px;
+    background: linear-gradient(115deg, #246941, #408755);
+    box-shadow: 0 12px 25px rgba(37, 104, 64, .16);
+  }
+  .intro::after {
+    content: "🥬";
+    position: absolute; right: 18px; bottom: -11px;
+    font-size: 87px; opacity: .92; transform: rotate(-10deg);
+  }
+  .intro-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 20px;
+    background: rgba(255,255,255,.16); font-size: 11px; font-weight: 650;
+  }
+  .intro h1 { margin: 12px 0 5px; font-size: 23px; line-height: 1.35; font-weight: 750; }
+  .intro p { margin: 0; max-width: 75%; color: rgba(255,255,255,.83); font-size: 13px; }
+  .search-wrap {
+    height: 51px; display: flex; align-items: center; gap: 10px;
+    margin: 19px 0 17px; padding: 0 14px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 15px; box-shadow: 0 3px 10px rgba(35,55,39,.025);
+  }
+  .search-icon { font-size: 19px; color: #7c897d; }
+  .search-wrap input {
+    width: 100%; border: 0; outline: 0; color: var(--ink);
+    background: transparent; font-size: 14px;
+  }
+  .search-wrap input::placeholder { color: #9aa39b; }
+  .clear-search {
+    display: none; width: 28px; height: 28px; border: 0; border-radius: 50%;
+    background: #f0f3ef; color: #687469; font-size: 17px;
+  }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 22px 2px 12px;
+  }
+  .section-head h2 { margin: 0; font-size: 17px; font-weight: 750; }
+  .count { font-size: 12px; color: var(--muted); }
+  .filters {
+    display: flex; gap: 8px; overflow-x: auto; padding: 1px 0 5px;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter {
+    flex: 0 0 auto; min-height: 37px; padding: 0 15px;
+    border: 1px solid var(--line); border-radius: 22px;
+    background: var(--surface); color: #68746a; font-size: 13px;
+    transition: .18s ease;
+  }
+  .filter.active {
+    color: white; border-color: var(--green); background: var(--green);
+    box-shadow: 0 4px 10px rgba(40,115,75,.16);
+  }
+  .list { display: grid; gap: 10px; }
+  .veg-card {
+    width: 100%; min-height: 83px; display: flex; align-items: center;
+    gap: 13px; padding: 12px 13px; text-align: left;
+    border: 1px solid var(--line); border-radius: 17px;
+    background: var(--surface); box-shadow: 0 3px 12px rgba(36,52,39,.035);
+    transition: transform .16s ease, box-shadow .16s ease;
+    animation: appear .28s ease both;
+  }
+  .veg-card:active { transform: scale(.985); }
+  .veg-emoji {
+    flex: 0 0 56px; width: 56px; height: 56px; display: grid; place-items: center;
+    border-radius: 16px; background: #f1f6eb; font-size: 32px;
+  }
+  .veg-info { flex: 1; min-width: 0; }
+  .veg-te { display: block; font-size: 16px; font-weight: 750; line-height: 1.5; }
+  .veg-en { display: block; margin-top: 1px; font-size: 12px; color: var(--muted); }
+  .card-right { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #95a095; }
+  .arrow { font-size: 20px; line-height: 1; }
+  .heart-mini { color: var(--green); font-size: 12px; }
+  .empty {
+    display: none; padding: 34px 16px; text-align: center;
+    border-radius: 18px; background: var(--surface); color: var(--muted);
+  }
+  .empty span { display: block; font-size: 40px; margin-bottom: 10px; }
+  .empty strong { color: var(--ink); display: block; margin-bottom: 5px; }
+  .tip {
+    display: flex; gap: 10px; align-items: flex-start; margin-top: 20px;
+    padding: 13px 14px; border-radius: 15px; background: #edf4e9;
+    color: #526452; font-size: 12px; line-height: 1.65;
+  }
+  .tip b { color: var(--green-dark); }
+  .overlay {
+    position: fixed; inset: 0; z-index: 5; display: flex; align-items: flex-end;
+    background: rgba(20, 31, 23, .42); opacity: 0; pointer-events: none;
+    transition: opacity .22s ease;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    width: 100%; max-width: 600px; margin: 0 auto;
+    padding: 10px 22px calc(24px + env(safe-area-inset-bottom));
+    border-radius: 25px 25px 0 0; background: var(--bg);
+    transform: translateY(28px); transition: transform .25s ease;
+    max-height: 86vh; overflow-y: auto;
+  }
+  .overlay.open .sheet { transform: translateY(0); }
+  .grabber { width: 39px; height: 4px; border-radius: 5px; margin: 0 auto 19px; background: #d6ddd5; }
+  .sheet-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .detail-emoji {
+    width: 78px; height: 78px; display: grid; place-items: center;
+    border-radius: 23px; background: #eaf2e5; font-size: 46px;
+  }
+  .close-btn, .fav-btn {
+    border: 0; display: grid; place-items: center; cursor: pointer;
+  }
+  .close-btn { width: 39px; height: 39px; border-radius: 50%; background: #edf0ea; font-size: 21px; }
+  .detail-title { margin: 16px 0 1px; font-size: 25px; font-weight: 780; }
+  .detail-en { color: var(--muted); font-size: 14px; }
+  .detail-category {
+    display: inline-block; margin-top: 13px; padding: 6px 11px;
+    border-radius: 18px; background: var(--mint); color: var(--green-dark);
+    font-size: 12px; font-weight: 650;
+  }
+  .detail-desc { margin: 17px 0 18px; color: #536054; line-height: 1.8; font-size: 14px; }
+  .fact-box { padding: 15px; border-radius: 17px; background: white; border: 1px solid var(--line); }
+  .fact-title { margin: 0 0 7px; font-size: 13px; font-weight: 750; }
+  .fact-text { margin: 0; color: #657167; font-size: 13px; line-height: 1.7; }
+  .fav-btn {
+    width: 100%; min-height: 51px; margin-top: 17px; gap: 9px;
+    border-radius: 15px; background: var(--green); color: white;
+    font-weight: 700; font-size: 15px;
+  }
+  .fav-btn.saved { background: #e5f1e7; color: var(--green-dark); }
+  @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🌿</div>
+      <div class="brand-name">కూరగాయలు</div>
+    </div>
+    <div class="top-note">మన ఆరోగ్యం • మన ఆహారం</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-label="పరిచయం">
+      <div class="intro-label">🥗 ఆరోగ్యకరమైన ఎంపిక</div>
+      <h1>కూరగాయల ప్రపంచం</h1>
+      <p>కూరగాయలను తెలుసుకోండి, ఆరోగ్యంగా తినండి.</p>
+    </section>
+
+    <label class="search-wrap">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input id="search" type="search" placeholder="కూరగాయ పేరు వెతకండి…" autocomplete="off" aria-label="కూరగాయలను వెతకండి">
+      <button id="clearSearch" class="clear-search" aria-label="వెతుకులాటను తొలగించు">×</button>
+    </label>
+
+    <div class="section-head">
+      <h2>కూరగాయల జాబితా</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <nav class="filters" id="filters" aria-label="కూరగాయల వర్గాలు"></nav>
+    <section class="list" id="list" aria-live="polite"></section>
+    <div class="empty" id="empty">
+      <span>🥕</span>
+      <strong>కూరగాయలు కనిపించలేదు</strong>
+      వేరే పేరుతో వెతికి చూడండి.
+    </div>
+
+    <aside class="tip">
+      <span aria-hidden="true">💡</span>
+      <span><b>చిన్న చిట్కా:</b> రంగురంగుల కూరగాయలను రోజువారీ భోజనంలో చేర్చడం మంచిది. వండే ముందు శుభ్రంగా కడగండి.</span>
+    </aside>
+  </main>
+</div>
+
+<div class="overlay" id="overlay" role="presentation">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="grabber"></div>
+    <div class="sheet-top">
+      <div class="detail-emoji" id="detailEmoji"></div>
+      <button class="close-btn" id="closeSheet" aria-label="మూసివేయి">×</button>
+    </div>
+    <h2 class="detail-title" id="detailTitle"></h2>
+    <div class="detail-en" id="detailEnglish"></div>
+    <span class="detail-category" id="detailCategory"></span>
+    <p class="detail-desc" id="detailDesc"></p>
+    <div class="fact-box">
+      <p class="fact-title">🥣 పోషణ & వంటలో ఉపయోగం</p>
+      <p class="fact-text" id="detailFact"></p>
+    </div>
+    <button class="fav-btn" id="favoriteBtn"></button>
+  </section>
+</div>
+
+<script>
+(() => {
+  const vegetables = [
+    {id:"tomato",te:"టమాటా",en:"Tomato",emoji:"🍅",cat:"కూరగాయలు",desc:"రుచికి చక్కని పులుపును ఇచ్చే టమాటా అనేక వంటకాల్లో ఉపయోగపడుతుంది.",fact:"విటమిన్ C మరియు లైకోపీన్‌కు మంచి మూలం. పప్పు, కూర, చారు, సలాడ్‌లలో వాడండి."},
+    {id:"potato",te:"బంగాళాదుంప",en:"Potato",emoji:"🥔",cat:"దుంపలు",desc:"చాలా రకాల వంటకాల్లో సులభంగా కలిసిపోయే ప్రసిద్ధ దుంప.",fact:"శక్తినిచ్చే కార్బోహైడ్రేట్లు, పొటాషియం కలిగి ఉంటుంది. ఉడికించి లేదా కూరగా వండితే రుచిగా ఉంటుంది."},
+    {id:"onion",te:"ఉల్లిపాయ",en:"Onion",emoji:"🧅",cat:"కూరగాయలు",desc:"భారతీయ వంటల్లో తాలింపు, మసాలాలకు మంచి రుచి, సువాసన ఇస్తుంది.",fact:"ఫైబర్, యాంటీఆక్సిడెంట్లు కలిగి ఉంటుంది. పచ్చిగా, వేయించి లేదా కూరల్లో వాడవచ్చు."},
+    {id:"carrot",te:"క్యారెట్",en:"Carrot",emoji:"🥕",cat:"దుంపలు",desc:"తీపి రుచి, ఆకర్షణీయమైన రంగుతో పిల్లలకూ నచ్చే కూరగాయ.",fact:"బీటా-కెరోటిన్ సమృద్ధిగా ఉంటుంది; ఇది శరీరంలో విటమిన్ Aగా మారుతుంది. సలాడ్, కూర, సూప్‌లలో వాడండి."},
+    {id:"brinjal",te:"వంకాయ",en:"Eggplant / Brinjal",emoji:"🍆",cat:"కూరగాయలు",desc:"తెలుగు వంటల్లో ప్రత్యేక స్థానం ఉన్న వంకాయతో ఎన్నో రుచికరమైన కూరలు చేయవచ్చు.",fact:"ఫైబర్ మరియు యాంటీఆక్సిడెంట్లు కలిగి ఉంటుంది. నూనెతో వేపుడు, పులుసు లేదా కూరగా వండండి."},
+    {id:"chilli",te:"పచ్చిమిరపకాయ",en:"Green chilli",emoji:"🌶️",cat:"కూరగాయలు",desc:"కారం, రుచిని పెంచడానికి కొద్దిగా వాడే పచ్చిమిరపకాయ.",fact:"విటమిన్ C కలిగి ఉంటుంది. తాలింపులో లేదా కూరల్లో వాడండి; మీకు నచ్చిన కారం మోతాదులోనే తీసుకోండి."},
+    {id:"cucumber",te:"దోసకాయ",en:"Cucumber",emoji:"🥒",cat:"ఇతరాలు",desc:"నీటి శాతం ఎక్కువగా ఉండే ఈ కూరగాయను వేసవిలో చల్లగా తినవచ్చు.",fact:"నీరు, కొంత ఫైబర్ అందిస్తుంది. సలాడ్‌గా లేదా పెరుగులో కలిపి తినండి."},
+    {id:"spinach",te:"పాలకూర",en:"Spinach",emoji:"🥬",cat:"ఆకుకూరలు",desc:"త్వరగా వండుకునే ఆకుకూర. పప్పుతో కలిపితే రుచిగా, పోషకంగా ఉంటుంది.",fact:"ఫోలేట్, విటమిన్ K మరియు ఐరన్ కలిగి ఉంటుంది. బాగా కడిగి పప్పు లేదా కూరగా వండండి."},
+    {id:"cabbage",te:"క్యాబేజీ",en:"Cabbage",emoji:"🥬",cat:"ఆకుకూరలు",desc:"తక్కువ సమయంలో వండుకోగలిగే, సలాడ్‌లలోనూ ఉపయోగించే కూరగాయ.",fact:"విటమిన్ C, K మరియు ఫైబర్ అందిస్తుంది. తక్కువ మంటపై వేపుడు లేదా సలాడ్‌గా వాడండి."},
+    {id:"cauliflower",te:"కాలీఫ్లవర్",en:"Cauliflower",emoji:"🥦",cat:"కూరగాయలు",desc:"కూర, వేపుడు, పులావ్ వంటి వంటల్లో బాగా సరిపోయే కూరగాయ.",fact:"ఫైబర్ మరియు విటమిన్ C కలిగి ఉంటుంది. వండే ముందు చిన్న ముక్కలుగా చేసి శుభ్రంగా కడగండి."},
+    {id:"okra",te:"బెండకాయ",en:"Okra / Lady's finger",emoji:"🌿",cat:"కూరగాయలు",desc:"తెలుగు ఇళ్లలో తరచుగా చేసే రుచికరమైన బెండకాయ వేపుడు, పులుసు.",fact:"ఫైబర్, ఫోలేట్ మరియు విటమిన్ C కలిగి ఉంటుంది. జిగురు తగ్గేందుకు కడిగిన తర్వాత తుడిచి తరగండి."},
+    {id:"pumpkin",te:"గుమ్మడికాయ",en:"Pumpkin",emoji:"🎃",cat:"దుంపలు",desc:"సహజమైన తీపి రుచి కలిగిన గుమ్మడికాయతో కూరలు, పులుసులు చేయవచ్చు.",fact:"బీటా-కెరోటిన్ మరియు ఫైబర్ కలిగి ఉంటుంది. పప్పు లేదా కొబ్బరితో వండితే రుచిగా ఉంటుంది."},
+    {id:"bottle-gourd",te:"సొరకాయ",en:"Bottle gourd",emoji:"🥒",cat:"దుంపలు",desc:"మెత్తగా, తేలికగా ఉండే ఈ కూరగాయ పప్పు, కూరల్లో చక్కగా కలుస్తుంది.",fact:"నీటి శాతం ఎక్కువగా ఉంటుంది. పప్పుతో లేదా తేలికపాటి కూరగా వండండి."},
+    {id:"drumstick",te:"మునగకాయ",en:"Drumstick",emoji:"🌱",cat:"కూరగాయలు",desc:"సాంబారు, పులుసుకు ప్రత్యేకమైన రుచిని ఇచ్చే పొడవైన కాయ.",fact:"ఫైబర్ మరియు పలు సూక్ష్మపోషకాలు కలిగి ఉంటుంది. ముక్కలుగా చేసి సాంబారు లేదా పులుసులో ఉడికించండి."},
+    {id:"beetroot",te:"బీట్‌రూట్",en:"Beetroot",emoji:"🫜",cat:"దుంపలు",desc:"ముదురు రంగు, తేలికపాటి తీపి రుచి కలిగిన దుంప.",fact:"ఫోలేట్, ఫైబర్ మరియు సహజ వర్ణద్రవ్యాలు కలిగి ఉంటుంది. ఉడికించి సలాడ్‌గా లేదా కూరగా వాడండి."},
+    {id:"peas",te:"బఠాణీలు",en:"Green peas",emoji:"🫛",cat:"ఇతరాలు",desc:"తీపి రుచితో పులావ్, కూర, ఉప్మా వంటి వంటలకు చక్కగా సరిపోతాయి.",fact:"మొక్కల ఆధారిత ప్రోటీన్, ఫైబర్ కలిగి ఉంటాయి. తాజా లేదా స్తంభింపచేసిన బఠాణీలను కూరల్లో వాడండి."},
+    {id:"garlic",te:"వెల్లుల్లి",en:"Garlic",emoji:"🧄",cat:"కూరగాయలు",desc:"తాలింపు, చట్నీ, మసాలా వంటలకు ఘాటైన సువాసనను ఇస్తుంది.",fact:"రుచితో పాటు యాంటీఆక్సిడెంట్ సమ్మేళనాలు కలిగి ఉంటుంది. తాలింపులో లేదా పప్పు, కూరల్లో వాడండి."},
+    {id:"sweet-potato",te:"చిలగడదుంప",en:"Sweet potato",emoji:"🍠",cat:"దుంపలు",desc:"సహజంగా తీపిగా ఉండే ఈ దుంపను ఉడికించి తినడం చాలా సులభం.",fact:"ఫైబర్, పొటాషియం మరియు బీటా-కెరోటిన్ అందిస్తుంది. ఉడికించి అల్పాహారంగా లేదా కూరగా తినండి."}
+  ];
+  const categories = ["అన్నీ", "ఆకుకూరలు", "దుంపలు", "కూరగాయలు", "ఇతరాలు", "ఇష్టమైనవి"];
+  const list = document.getElementById("list");
+  const filters = document.getElementById("filters");
+  const search = document.getElementById("search");
+  const empty = document.getElementById("empty");
+  const count = document.getElementById("count");
+  const overlay = document.getElementById("overlay");
+  let activeCategory = "అన్నీ";
+  let current = null;
+  let favorites = new Set();
+  try {
+    const saved = JSON.parse(localStorage.getItem("vegetables-favorites") || "[]");
+    if (Array.isArray(saved)) favorites = new Set(saved);
+  } catch (_) {}
+
+  function renderFilters() {
+    filters.innerHTML = "";
+    categories.forEach(category => {
+      const btn = document.createElement("button");
+      btn.className = "filter" + (activeCategory === category ? " active" : "");
+      btn.textContent = category === "ఇష్టమైనవి" ? "♡ ఇష్టమైనవి" : category;
+      btn.type = "button";
+      btn.addEventListener("click", () => {
+        activeCategory = category;
+        renderFilters();
+        renderList();
+      });
+      filters.appendChild(btn);
+    });
+  }
+
+  function renderList() {
+    const term = search.value.trim().toLocaleLowerCase();
+    const results = vegetables.filter(v => {
+      const matchesCategory = activeCategory === "అన్నీ" ||
+        (activeCategory === "ఇష్టమైనవి" ? favorites.has(v.id) : v.cat === activeCategory);
+      const matchesSearch = !term || (v.te + " " + v.en + " " + v.cat).toLocaleLowerCase().includes(term);
+      return matchesCategory && matchesSearch;
+    });
+    list.innerHTML = "";
+    results.forEach((v, index) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "veg-card";
+      card.style.animationDelay = Math.min(index * 25, 180) + "ms";
+      card.setAttribute("aria-label", v.te + ", " + v.en + ". వివరాలు చూడండి");
+      card.innerHTML = '<span class="veg-emoji" aria-hidden="true">' + v.emoji + '</span>' +
+        '<span class="veg-info"><span class="veg-te">' + v.te + '</span><span class="veg-en">' + v.en + '</span></span>' +
+        '<span class="card-right">' + (favorites.has(v.id) ? '<span class="heart-mini">♥</span>' : '') + '<span class="arrow" aria-hidden="true">›</span></span>';
+      card.addEventListener("click", () => openDetails(v));
+      list.appendChild(card);
+    });
+    count.textContent = results.length + " రకాలు";
+    empty.style.display = results.length ? "none" : "block";
+    list.style.display = results.length ? "grid" : "none";
+  }
+
+  function openDetails(v) {
+    current = v;
+    document.getElementById("detailEmoji").textContent = v.emoji;
+    document.getElementById("detailTitle").textContent = v.te;
+    document.getElementById("detailEnglish").textContent = v.en;
+    document.getElementById("detailCategory").textContent = v.cat;
+    document.getElementById("detailDesc").textContent = v.desc;
+    document.getElementById("detailFact").textContent = v.fact;
+    updateFavoriteButton();
+    overlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+    document.getElementById("closeSheet").focus();
+  }
+
+  function updateFavoriteButton() {
+    const btn = document.getElementById("favoriteBtn");
+    const saved = current && favorites.has(current.id);
+    btn.classList.toggle("saved", !!saved);
+    btn.textContent = saved ? "♥  ఇష్టమైన వాటి నుంచి తొలగించండి" : "♡  ఇష్టమైన వాటిలో చేర్చండి";
+  }
+  function closeDetails() {
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+    current = null;
+  }
+
+  document.getElementById("favoriteBtn").addEventListener("click", () => {
+    if (!current) return;
+    if (favorites.has(current.id)) favorites.delete(current.id);
+    else favorites.add(current.id);
+    try { localStorage.setItem("vegetables-favorites", JSON.stringify([...favorites])); } catch (_) {}
+    updateFavoriteButton();
+    renderList();
+  });
+  document.getElementById("closeSheet").addEventListener("click", closeDetails);
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeDetails(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && overlay.classList.contains("open")) closeDetails(); });
+  search.addEventListener("input", () => {
+    document.getElementById("clearSearch").style.display = search.value ? "block" : "none";
+    renderList();
+  });
+  document.getElementById("clearSearch").addEventListener("click", () => {
+    search.value = "";
+    document.getElementById("clearSearch").style.display = "none";
+    search.focus();
+    renderList();
+  });
+
+  renderFilters();
+  renderList();
+})();
+</script>
+</body>
+</html>
